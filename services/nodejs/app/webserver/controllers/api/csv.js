@@ -8,8 +8,8 @@ module.exports = {
             return res.endJSON(400, {error: 'missed required parameter: url'});
         }
 
-        if ( /^https?\:\/\/[a-zA-Z0-9\-\/\.\?\=]+$/.test( req.query.source ) === false ) {
-            return res.endJSON(400, {error: 'invalid url'});
+        if ( /^https?:\/\/[a-zA-Z0-9\-\/\.\?=_]+$/.test( req.query.source ) === false ) {
+            return res.endJSON(400, {error: 'invalid url: '+req.query.source});
         }
 
         /* DOWNLOAD CSV */
