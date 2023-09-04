@@ -12,12 +12,8 @@ steps:
         sed -i "s/__BASIC_AUTH_PASSWORD__/$$BASIC_AUTH_PASSWORD/" $$APP_YAML
     entrypoint: bash
     secretEnv:
-      - DMF_DB_HOST
-      - DMF_DB_USER
-      - DMF_DB_PASS
       - BASIC_AUTH_USER
       - BASIC_AUTH_PASSWORD
-      - SLACK_WEBHOOKS
   - name: gcr.io/cloud-builders/gcloud
     args:
       - app
@@ -31,3 +27,9 @@ options:
   dynamicSubstitutions: true
 substitutions:
   _SERVICE_ACCOUNT: 'csv-to-ical@${PROJECT_ID}.iam.gserviceaccount.com'
+availableSecrets:
+  secretManager:
+    - versionName: projects/$PROJECT_ID/secrets/BASIC_AUTH_USER/versions/latest
+      env: 'BASIC_AUTH_USER'
+    - versionName: projects/$PROJECT_ID/secrets/BASIC_AUTH_PASSWORD/versions/latest
+      env: 'BASIC_AUTH_PASSWORD'
