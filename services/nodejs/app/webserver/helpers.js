@@ -100,11 +100,11 @@ http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat 
         return null;
     }
 
-    let ical = 'BEGIN:VCALENDAR\n' +
-        'VERSION:2.0\n' +
-        'PRODID:-//https://github.com/VictorLereniusMarketzoo/csv-to-ical//Victor Lerenius//EN\n' +
-        'CALSCALE:GREGORIAN\n' +
-        'METHOD:PUBLISH\n';
+    let ical = 'BEGIN:VCALENDAR\r\n' +
+        'VERSION:2.0\r\n' +
+        'PRODID:-//https://github.com/VictorLereniusMarketzoo/csv-to-ical//Victor Lerenius//EN\r\n' +
+        'CALSCALE:GREGORIAN\r\n' +
+        'METHOD:PUBLISH\r\n';
 
     rows.forEach( (row, index) => {
         let cells = row.split(',');
@@ -112,15 +112,15 @@ http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat 
 console.log(date);
         cells[dateColumn] = undefined;
         date = date.replace( /[^\d]/g, '' );
-        ical = ical + 'BEGIN:VEVENT\n';
-        if( repeat == 'yearly' ) ical = ical + 'RRULE:FREQ=YEARLY;INTERVAL=1;WKST=SU\n'
-        ical = ical + 'UID:' + date + '@' + cells[0] + '\n' +
-            'DTSTAMP:' + date + 'T130000Z\n' +
-            'DTSTART;VALUE=DATE:' + date + '\n' +
-            'DTEND;VALUE=DATE:' + date + '\n' +
-            'SUMMARY:' + cells[0] + '\n' +
-            'DESCRIPTION:' + cells.join(', ').replaceAll(/\, \, /g,', ') + '\n' +
-            'END:VEVENT\n';
+        ical = ical + 'BEGIN:VEVENT\r\n';
+        if( repeat == 'yearly' ) ical = ical + 'RRULE:FREQ=YEARLY;INTERVAL=1;WKST=SU\r\n'
+        ical = ical + 'UID:' + date + '@' + cells[0].replaceAll(/[^A-Za-z0-9]+/g,'-') + '\r\n' +
+            'DTSTAMP:' + date + 'T130000Z\r\n' +
+            'DTSTART;VALUE=DATE:' + date + '\r\n' +
+            'DTEND;VALUE=DATE:' + date + '\r\n' +
+            'SUMMARY:' + cells[0] + '\r\n' +
+            'DESCRIPTION:' + cells.join(', ').replaceAll(/\, \, /g,', ') + '\r\n' +
+            'END:VEVENT\r\n';
     });
 
     ical = ical + 'END:VCALENDAR';

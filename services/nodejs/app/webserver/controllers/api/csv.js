@@ -24,7 +24,7 @@ module.exports = {
             const ical = res.parseCSVtoIcal( response.data, req.query.headerRow, req.query.repeat )
 
             // Set the response status and headers
-            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.writeHead(200, { 'Content-Type': 'text/calendar' });
 
             // Return the content fetched from the secret URL
             res.end(ical);
