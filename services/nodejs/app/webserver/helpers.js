@@ -84,20 +84,26 @@ http.ServerResponse.prototype.nestQueryParams = function(query) {
 }
 
 http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat ) {
+    csv = csv.replace(/"(.*?)"/g, (str) => str.replaceAll(',', '###COMMA###'));
     const rows = csv.trim().split('\n');
     if( headerRow ) {
         rows.shift();
     }
     let dateColumn = null;
-    rows[0].split(',').forEach( (cell, index) => {
-        if( /^\d{4}\-\d{2}\-\d{2}$/.test( cell ) ) {
-            dateColumn = index;
+    rows.forEach( (row, rowIndex) => {
+        if( ! dateColumn ) {
+            row.split(',').forEach((cell, columnIndex) => {
+                if (/^\d{4}\-\d{2}\-\d{2}$/.test(cell)) {
+                    dateColumn = columnIndex;
+                }
+            });
         }
     });
 
     // No date column found
     if( dateColumn === null ) {
-        return null;
+        console.log('Error: No date field found in CSV');
+        return false;
     }
 
     let ical = 'BEGIN:VCALENDAR\r\n' +
@@ -111,7 +117,10 @@ http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat 
     rows.forEach( (row, index) => {
         let cells = row.split(',');
         let date = cells[dateColumn];
-console.log(date);
+
+        // Skip empty rows
+        if( ! date ) return;
+
         cells[dateColumn] = undefined;
         date = date.replace( /[^\d]/g, '' );
         ical = ical + 'BEGIN:VEVENT\r\n';
@@ -120,8 +129,8 @@ console.log(date);
             'DTSTAMP:' + date + 'T130000Z\r\n' +
             'DTSTART;VALUE=DATE:' + date + '\r\n' +
             'DTEND;VALUE=DATE:' + date + '\r\n' +
-            'SUMMARY:' + cells[0] + '\r\n' +
-            'DESCRIPTION:' + cells.join(', ').replaceAll(/\, \, /g,', ') + '\r\n' +
+            'SUMMARY:' + cells[0].replaceAll('###COMMA###', ',') + '\r\n' +
+            'DESCRIPTION:' + cells.join(', ').replaceAll('###COMMA###', ',').replaceAll(/\, \, /g,', ') + '\r\n' +
             'END:VEVENT\r\n';
     });
 
