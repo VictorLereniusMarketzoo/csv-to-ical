@@ -102,8 +102,8 @@ http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat 
 
     let ical = 'BEGIN:VCALENDAR\r\n' +
         'VERSION:2.0\r\n' +
-        'NAME:My Calendar Name\r\n' +
-        'X-WR-CALNAME:My Calendar Name\r\n' +
+        'NAME:My csv Calendar\r\n' +
+        'X-WR-CALNAME:My csv Calendar\r\n' +
         'PRODID:-//https://github.com/VictorLereniusMarketzoo/csv-to-ical//Victor Lerenius//EN\r\n' +
         'CALSCALE:GREGORIAN\r\n' +
         'METHOD:PUBLISH\r\n';
