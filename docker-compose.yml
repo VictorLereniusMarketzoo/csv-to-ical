@@ -1,0 +1,13 @@
+version: '3.7'
+
+services:
+
+  nodejs:
+    build:
+      context: services/nodejs
+    platform: linux/x86_64
+    volumes:
+      - ./services/nodejs/app:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 8010:80

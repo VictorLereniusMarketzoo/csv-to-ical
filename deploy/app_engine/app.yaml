@@ -1,0 +1,15 @@
+runtime: nodejs20
+
+service: __SERVICE_NAME__
+
+entrypoint: "node index.js"
+
+env_variables:
+  BASIC_AUTH_USER: __BASIC_AUTH_USER__
+  BASIC_AUTH_PASSWORD: __BASIC_AUTH_PASSWORD__
+  DMF_DB_HOST: __DMF_DB_HOST__
+  DMF_DB_PASS: __DMF_DB_PASS__
+  DMF_DB_USER: __DMF_DB_USER__
+  SLACK_WEBHOOKS: __SLACK_WEBHOOKS__
+
+service_account: __SERVICE_ACCOUNT__
