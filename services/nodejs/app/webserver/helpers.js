@@ -88,13 +88,13 @@ http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat 
     const rows = csv.trim().split('\n');
     if( headerRow >= 1 ) {
         rows.shift();
-        if( headerRow == 2 ) rows.shift();
+        if( headerRow === 2 ) rows.shift();
     }
     let dateColumn = null;
     rows.forEach( (row, rowIndex) => {
         if( ! dateColumn ) {
             row.split(',').forEach((cell, columnIndex) => {
-                if (/^\d{4}\-\d{2}\-\d{2}$/.test(cell)) {
+                if (/^\d{4}-\d{2}-\d{2}$/.test(cell)) {
                     dateColumn = columnIndex;
                 }
             });
@@ -123,7 +123,7 @@ http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat 
         if( ! date ) return;
 
         // Skip invalid dates
-        if ( /^\d{4}\-\d{2}\-\d{2}$/.test( date ) === false ) return;
+        if ( /^\d{4}-\d{2}-\d{2}$/.test( date ) === false ) return;
 
         date = date.toString().replace( /[^\d]/g, '' );
 
@@ -131,13 +131,13 @@ http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat 
         cells.splice(dateColumn, 1);
 
         ical = ical + 'BEGIN:VEVENT\r\n';
-        if( repeat == 'yearly' ) ical = ical + 'RRULE:FREQ=YEARLY;INTERVAL=1;WKST=SU\r\n'
+        if( repeat === 'yearly' ) ical = ical + 'RRULE:FREQ=YEARLY;INTERVAL=1;WKST=SU\r\n'
         ical = ical + 'UID:' + date + '@' + cells[0].toString().replaceAll(/[^A-Za-z0-9]+/g,'-') + '\r\n' +
             'DTSTAMP:' + date + 'T130000Z\r\n' +
             'DTSTART;VALUE=DATE:' + date + '\r\n' +
             'DTEND;VALUE=DATE:' + date + '\r\n' +
             'SUMMARY:' + cells[0].toString().replaceAll('###COMMA###', ',') + '\r\n' +
-            'DESCRIPTION:' + cells.join(', ').replaceAll('###COMMA###', ',').replaceAll(/\, \, /g,', ') + '\r\n' +
+            'DESCRIPTION:' + cells.join(', ').replaceAll('###COMMA###', ',').replaceAll(/, , /g,', ') + '\r\n' +
             'END:VEVENT\r\n';
     });
 
