@@ -9,13 +9,7 @@ steps:
         sed -i "s/__SERVICE_NAME__/$REPO_NAME/" $$APP_YAML &&
         sed -i "s/__SERVICE_ACCOUNT__/$_SERVICE_ACCOUNT/" $$APP_YAML &&
         sed -i "s/__BASIC_AUTH_USER__/$$BASIC_AUTH_USER/" $$APP_YAML &&
-        sed -i "s/__BASIC_AUTH_PASSWORD__/$$BASIC_AUTH_PASSWORD/" $$APP_YAML &&
-        sed -i "s/__DMF_DB_HOST__/$$DMF_DB_HOST/" $$APP_YAML &&
-        sed -i "s/__DMF_DB_USER__/$$DMF_DB_USER/" $$APP_YAML &&
-        sed -i "s/__DMF_DB_PASS__/$$DMF_DB_PASS/" $$APP_YAML &&
-        sed -i "s/__SLACK_WEBHOOKS__/$$SLACK_WEBHOOKS/" $$APP_YAML &&
-        cp /workspace/deploy/app_engine/cron.yaml $$CRON_YAML &&
-        sed -i "s/__SERVICE_NAME__/$REPO_NAME/" $$CRON_YAML
+        sed -i "s/__BASIC_AUTH_PASSWORD__/$$BASIC_AUTH_PASSWORD/" $$APP_YAML
     entrypoint: bash
     secretEnv:
       - DMF_DB_HOST
@@ -37,17 +31,3 @@ options:
   dynamicSubstitutions: true
 substitutions:
   _SERVICE_ACCOUNT: 'csv-to-ical@${PROJECT_ID}.iam.gserviceaccount.com'
-availableSecrets:
-  secretManager:
-    - versionName: projects/$PROJECT_ID/secrets/DMF_DB_HOST/versions/latest
-      env: 'DMF_DB_HOST'
-    - versionName: projects/$PROJECT_ID/secrets/DMF_DB_USER/versions/latest
-      env: 'DMF_DB_USER'
-    - versionName: projects/$PROJECT_ID/secrets/DMF_DB_PASS/versions/latest
-      env: 'DMF_DB_PASS'
-    - versionName: projects/$PROJECT_ID/secrets/BASIC_AUTH_USER/versions/latest
-      env: 'BASIC_AUTH_USER'
-    - versionName: projects/$PROJECT_ID/secrets/BASIC_AUTH_PASSWORD/versions/latest
-      env: 'BASIC_AUTH_PASSWORD'
-    - versionName: projects/$PROJECT_ID/secrets/SLACK_WEBHOOKS/versions/latest
-      env: 'SLACK_WEBHOOKS'

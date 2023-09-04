@@ -11,5 +11,5 @@ Default credentials: admin / admin
 ## Available endpoints
 
 ```
-/api/slack?database=pixel-it&table=triggers&timestamp_key=created_at&filter.hostname=go.com.mt&filter.username=sms&workspace=marketzoo&channel=%23sms-it
+
 ```
