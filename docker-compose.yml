@@ -6,6 +6,8 @@ services:
     build:
       context: services/nodejs
     platform: linux/x86_64
+    env_file:
+      - services/nodejs/.env
     volumes:
       - ./services/nodejs/app:/usr/src/app
       - /usr/src/app/node_modules

@@ -1,5 +1,5 @@
 // Webserver
-require('./webserver/server.js').listen(80, function() {
+require('./webserver/server.js').listen(process.env.PORT, function() {
     console.log('webserver started');
 });
 
