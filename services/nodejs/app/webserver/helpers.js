@@ -111,7 +111,7 @@ http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat 
         'VERSION:2.0\r\n' +
         'NAME:My csv Calendar\r\n' +
         'X-WR-CALNAME:My csv Calendar\r\n' +
-        'PRODID:-//https://github.com/VictorLereniusMarketzoo/csv-to-ical//Victor Lerenius//EN\r\n' +
+        'PRODID:-//https://github.com/VictorLereniusMarketzoo/csv-to-ical//Victor//EN\r\n' +
         'CALSCALE:GREGORIAN\r\n' +
         'METHOD:PUBLISH\r\n';
 
