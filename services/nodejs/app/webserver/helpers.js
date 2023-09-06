@@ -83,7 +83,7 @@ http.ServerResponse.prototype.nestQueryParams = function(query) {
     return result;
 }
 
-http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat ) {
+http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat, allDayTime ) {
     csv = csv.replace(/"(.*?)"/g, (str) => str.replaceAll(',', '###COMMA###'));
     const rows = csv.trim().split('\n');
     if( headerRow >= 1 ) {
@@ -131,12 +131,19 @@ http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat 
         cells.splice(dateColumn, 1);
 
         ical = ical + 'BEGIN:VEVENT\r\n';
-        if( repeat === 'yearly' ) ical = ical + 'RRULE:FREQ=YEARLY;INTERVAL=1;WKST=SU\r\n'
+
+        if( repeat === 'yearly' ) ical = ical + 'RRULE:FREQ=YEARLY;INTERVAL=1;WKST=SU\r\n';
+
         ical = ical + 'UID:' + date + '@' + cells[0].toString().replaceAll(/[^A-Za-z0-9]+/g,'-') + '\r\n' +
-            'DTSTAMP:' + date + 'T130000Z\r\n' +
-            'DTSTART;VALUE=DATE:' + date + '\r\n' +
-            'DTEND;VALUE=DATE:' + date + '\r\n' +
-            'SUMMARY:' + cells[0].toString().replaceAll('###COMMA###', ',') + '\r\n' +
+            'DTSTAMP:' + date + 'T130000Z\r\n';
+        if( allDayTime ) {
+            ical = ical + 'DTSTART:' + date + 'T' + allDayTime.replaceAll(/[^0-9]+/g,'').substring(0,4) + '00Z\r\n';
+            ical = ical + 'DTEND:' + date + 'T' + ( Math.round(allDayTime.replaceAll(/[^0-9]+/g,'').substring(0,4)) + 100 ).toString().padStart(4, '0') + '00Z\r\n';
+        } else {
+            ical = ical + 'DTSTART;VALUE=DATE:' + date + '\r\n' +
+                'DTEND;VALUE=DATE:' + date + '\r\n';
+        }
+        ical = ical + 'SUMMARY:' + cells[0].toString().replaceAll('###COMMA###', ',') + '\r\n' +
             'DESCRIPTION:' + cells.join(', ').replaceAll('###COMMA###', ',').replaceAll(/, , /g,', ') + '\r\n' +
             'END:VEVENT\r\n';
     });

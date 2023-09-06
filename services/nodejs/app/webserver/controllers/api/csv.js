@@ -21,7 +21,7 @@ module.exports = {
             headers,
         } ).then(response => {
             console.log(response.data);
-            const ical = res.parseCSVtoIcal( response.data, req.query.headerRow, req.query.repeat )
+            const ical = res.parseCSVtoIcal( response.data, req.query.headerRow, req.query.repeat, req.query.allDayTime );
 
             // Set the response status and headers
             res.writeHead(200, { 'Content-Type': 'text/calendar' });
