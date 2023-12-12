@@ -131,10 +131,6 @@ http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat,
         dateStart = dateStart.toString().replace( /[^\d]/g, '' );
         dateEnd = dateEnd.toString().replace( /[^\d]/g, '' );
 
-        // Remove date dateColumnStart and dateColumnEnd from cells
-        cells.splice(dateColumnStart, 1);
-        if( dateColumnStart != dateColumnEnd ) cells.splice(dateColumnEnd-1, 1);
-
         ical = ical + 'BEGIN:VEVENT\r\n';
 
         if( repeat === 'yearly' ) ical = ical + 'RRULE:FREQ=YEARLY;INTERVAL=1;WKST=SU\r\n';
@@ -145,9 +141,18 @@ http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat,
             ical = ical + 'DTSTART:' + dateStart + 'T' + allDayTime.replaceAll(/[^0-9]+/g,'').substring(0,4) + '00Z\r\n';
             ical = ical + 'DTEND:' + dateEnd + 'T' + ( Math.round(allDayTime.replaceAll(/[^0-9]+/g,'').substring(0,4)) + 100 ).toString().padStart(4, '0') + '00Z\r\n';
         } else {
+            // Push dateEnd to next day
+            let endDatePlusOneDay = new Date(cells[dateColumnEnd]);
+            endDatePlusOneDay.setDate(endDatePlusOneDay.getDate() + 1);
+
             ical = ical + 'DTSTART;VALUE=DATE:' + dateStart + '\r\n' +
-                'DTEND;VALUE=DATE:' + dateEnd + '\r\n';
+                'DTEND;VALUE=DATE:' + endDatePlusOneDay.toISOString().slice(0, 10).replace( /[^\d]/g, '' ) + '\r\n';
         }
+
+        // Remove date dateColumnStart and dateColumnEnd from cells
+        cells.splice(dateColumnStart, 1);
+        if( dateColumnStart != dateColumnEnd ) cells.splice(dateColumnEnd-1, 1);
+
         ical = ical + 'SUMMARY:' + cells[0].toString().replaceAll('###COMMA###', ',') + '\r\n' +
             'DESCRIPTION:' + cells.join(', ').replaceAll('###COMMA###', ',').replaceAll(/, , /g,', ') + '\r\n' +
             'END:VEVENT\r\n';
