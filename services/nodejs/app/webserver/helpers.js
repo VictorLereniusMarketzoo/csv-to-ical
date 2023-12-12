@@ -90,19 +90,21 @@ http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat,
         rows.shift();
         if( headerRow === 2 ) rows.shift();
     }
-    let dateColumn = null;
+    let dateColumnStart = null;
+    let dateColumnEnd = null;
     rows.forEach( (row, rowIndex) => {
-        if( ! dateColumn ) {
+        if( ! dateColumnStart || dateColumnStart == dateColumnEnd ) {
             row.split(',').forEach((cell, columnIndex) => {
                 if (/^\d{4}-\d{2}-\d{2}$/.test(cell)) {
-                    dateColumn = columnIndex;
+                    dateColumnEnd = columnIndex;
+                    if (dateColumnStart === null) dateColumnStart = columnIndex;
                 }
             });
         }
     });
 
     // No date column found
-    if( dateColumn === null ) {
+    if( dateColumnStart === null ) {
         console.log('Error: No date field found in CSV');
         return false;
     }
@@ -117,31 +119,34 @@ http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat,
 
     rows.forEach( (row, index) => {
         let cells = row.split(',');
-        let date = cells[dateColumn];
+        let dateStart = cells[dateColumnStart];
+        let dateEnd = cells[dateColumnEnd]?? dateStart;
 
         // Skip empty rows
-        if( ! date ) return;
+        if( ! dateStart ) return;
 
         // Skip invalid dates
-        if ( /^\d{4}-\d{2}-\d{2}$/.test( date ) === false ) return;
+        if ( /^\d{4}-\d{2}-\d{2}$/.test( dateStart ) === false ) return;
 
-        date = date.toString().replace( /[^\d]/g, '' );
+        dateStart = dateStart.toString().replace( /[^\d]/g, '' );
+        dateEnd = dateEnd.toString().replace( /[^\d]/g, '' );
 
         // Remove date column
-        cells.splice(dateColumn, 1);
+        cells.splice(dateColumnStart, 1);
+        if( dateColumnStart != dateColumnEnd ) cells.splice(dateColumnEnd, 1);
 
         ical = ical + 'BEGIN:VEVENT\r\n';
 
         if( repeat === 'yearly' ) ical = ical + 'RRULE:FREQ=YEARLY;INTERVAL=1;WKST=SU\r\n';
 
-        ical = ical + 'UID:' + date + '@' + cells[0].toString().replaceAll(/[^A-Za-z0-9]+/g,'-') + '\r\n' +
-            'DTSTAMP:' + date + 'T130000Z\r\n';
+        ical = ical + 'UID:' + dateStart + '@' + cells[0].toString().replaceAll(/[^A-Za-z0-9]+/g,'-') + '\r\n' +
+            'DTSTAMP:' + dateStart + 'T130000Z\r\n';
         if( allDayTime ) {
-            ical = ical + 'DTSTART:' + date + 'T' + allDayTime.replaceAll(/[^0-9]+/g,'').substring(0,4) + '00Z\r\n';
-            ical = ical + 'DTEND:' + date + 'T' + ( Math.round(allDayTime.replaceAll(/[^0-9]+/g,'').substring(0,4)) + 100 ).toString().padStart(4, '0') + '00Z\r\n';
+            ical = ical + 'DTSTART:' + dateStart + 'T' + allDayTime.replaceAll(/[^0-9]+/g,'').substring(0,4) + '00Z\r\n';
+            ical = ical + 'DTEND:' + dateEnd + 'T' + ( Math.round(allDayTime.replaceAll(/[^0-9]+/g,'').substring(0,4)) + 100 ).toString().padStart(4, '0') + '00Z\r\n';
         } else {
-            ical = ical + 'DTSTART;VALUE=DATE:' + date + '\r\n' +
-                'DTEND;VALUE=DATE:' + date + '\r\n';
+            ical = ical + 'DTSTART;VALUE=DATE:' + dateStart + '\r\n' +
+                'DTEND;VALUE=DATE:' + dateEnd + '\r\n';
         }
         ical = ical + 'SUMMARY:' + cells[0].toString().replaceAll('###COMMA###', ',') + '\r\n' +
             'DESCRIPTION:' + cells.join(', ').replaceAll('###COMMA###', ',').replaceAll(/, , /g,', ') + '\r\n' +
