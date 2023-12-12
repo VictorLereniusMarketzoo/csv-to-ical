@@ -131,9 +131,9 @@ http.ServerResponse.prototype.parseCSVtoIcal = function( csv, headerRow, repeat,
         dateStart = dateStart.toString().replace( /[^\d]/g, '' );
         dateEnd = dateEnd.toString().replace( /[^\d]/g, '' );
 
-        // Remove date column
+        // Remove date dateColumnStart and dateColumnEnd from cells
         cells.splice(dateColumnStart, 1);
-        if( dateColumnStart != dateColumnEnd ) cells.splice(dateColumnEnd, 1);
+        if( dateColumnStart != dateColumnEnd ) cells.splice(dateColumnEnd-1, 1);
 
         ical = ical + 'BEGIN:VEVENT\r\n';
 
