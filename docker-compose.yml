@@ -12,4 +12,4 @@ services:
       - ./services/nodejs/app:/usr/src/app
       - /usr/src/app/node_modules
     ports:
-      - 8010:80
+      - 8019:80
